@@ -25,3 +25,5 @@ Bob é um assistente virtual feito com **Flask (backend)** e **JavaScript (front
 - 🔍 Faz pesquisas no Google
 - 🔇 Botão para ativar/desativar som
 - 🧹 Permite excluir lembretes por trecho
+
+https://phael.pythonanywhere.com/
