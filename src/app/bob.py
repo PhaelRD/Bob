@@ -1,4 +1,3 @@
-# bob.py (sem alterações, continua retornando tipo='lembretes' e dados.lembretes)
 from flask import Blueprint, request, jsonify
 import os
 import datetime

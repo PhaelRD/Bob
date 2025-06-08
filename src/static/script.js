@@ -1,4 +1,3 @@
-// script.js (insere getVoices() e log de erro na saudação)
 document.addEventListener('DOMContentLoaded', () => {
   const chatMessages = document.getElementById('chat-messages');
   const userInput    = document.getElementById('user-input');
