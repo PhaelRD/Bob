@@ -7,6 +7,7 @@ Bob é um assistente virtual feito com **Flask (backend)** e **JavaScript (front
 - 🐍 **Python + Flask** (backend)
 - 🌐 **JavaScript (vanilla)** (frontend)
 - 🧠 **API Mistral AI** (respostas de IA)
+- 🎶 **Itunes API**
 - 🗣️ **Web Speech API**
   - `speechSynthesis` (fala)
   - `SpeechRecognition` (voz para texto)
@@ -23,6 +24,7 @@ Bob é um assistente virtual feito com **Flask (backend)** e **JavaScript (front
 - 📝 Salva lembretes no arquivo `lembretes.txt`
 - 📆 Informa a data e hora atual
 - 🔍 Faz pesquisas no Google
+- 🎶 Toca prévias de musicas
 - 🔇 Botão para ativar/desativar som
 - 🧹 Permite excluir lembretes por trecho
 
