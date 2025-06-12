@@ -76,7 +76,7 @@ def obter_data_hora_texto() -> str:
     return f"{part_hora} {part_data}"
 
 def obter_resposta_ia(pergunta, max_tokens=150, temperature=0.7, top_p=0.9):
-    headers = {"Authorization": f"Bearer {os.getenv('MISTRAL_API_KEY')}", "Content-Type":"application/json"}
+    headers = {"Authorization": f"Bearer 0DG6zXse4rcP4L8vejC5wzxQNJYYrV4r", "Content-Type":"application/json"}
     payload = {
         "model":"mistral-medium",
         "messages":[{"role":"system","content":"Você é o Bob, um assistente educado e objetivo."},
