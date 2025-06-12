@@ -14,7 +14,10 @@ from src.app.comandos_respostas import (
     LISTA_EXCLUIR_LEMBRETES,
     LISTA_PESQUISA,
     LISTA_SAIR,
+    LISTA_TOCAR_MUSICA,
 )
+
+ITUNES_API_URL = "https://itunes.apple.com/search"
 
 bob_bp = Blueprint('bob', __name__)
 ARQUIVO_LEMBRETES = os.path.join(os.path.dirname(__file__), 'lembretes.txt')
@@ -73,7 +76,7 @@ def obter_data_hora_texto() -> str:
     return f"{part_hora} {part_data}"
 
 def obter_resposta_ia(pergunta, max_tokens=150, temperature=0.7, top_p=0.9):
-    headers = {"Authorization": f"Bearer 0DG6zXse4rcP4L8vejC5wzxQNJYYrV4r", "Content-Type":"application/json"}
+    headers = {"Authorization": f"Bearer {os.getenv('MISTRAL_API_KEY')}", "Content-Type":"application/json"}
     payload = {
         "model":"mistral-medium",
         "messages":[{"role":"system","content":"Você é o Bob, um assistente educado e objetivo."},
@@ -90,8 +93,10 @@ def obter_resposta_ia(pergunta, max_tokens=150, temperature=0.7, top_p=0.9):
 def processar_comando(comando: str):
     cmd = comando.strip().lower()
     tipo, dados = 'texto', {}
-    if any(f in cmd for f in LISTA_HORAS+LISTA_DATA):
+
+    if any(f in cmd for f in LISTA_HORAS + LISTA_DATA):
         resposta = obter_data_hora_texto()
+
     elif any(f in cmd for f in LISTA_LER_LEMBRETES):
         lembs = ler_todos_lembretes()
         if lembs:
@@ -100,29 +105,50 @@ def processar_comando(comando: str):
             dados['lembretes'] = lembs
         else:
             resposta = "Você não tem nenhum lembrete salvo."
+
     elif any(cmd.startswith(p) for p in LISTA_LEMBRETE):
         txt = next((cmd[len(p):].strip() for p in LISTA_LEMBRETE if cmd.startswith(p)), "")
         resposta = gravar_lembrete(txt) if txt else "Diga 'lembrete de' e o conteúdo."
+
     elif any(f in cmd for f in LISTA_EXCLUIR_LEMBRETES):
         trecho = next((cmd.split(f,1)[1].strip() for f in LISTA_EXCLUIR_LEMBRETES if f in cmd), "")
         resposta = excluir_lembrete(trecho) if trecho else "Diga 'excluir lembrete' seguido do trecho."
+
     elif any(f in cmd for f in LISTA_PESQUISA):
         termo = next((cmd.split(p,1)[1].strip() for p in LISTA_PESQUISA if p in cmd), "")
         if termo:
             tipo, resposta, dados['url'] = 'pesquisa', f"Pesquisando por {termo} no Google.", f"https://www.google.com/search?q={urllib.parse.quote_plus(termo)}"
         else:
             resposta = "Diga 'pesquisar por' seguido do termo."
+
     elif any(f in cmd for f in LISTA_SAIR):
         resposta = "Até logo!"
+
+    elif any(f in cmd for f in LISTA_TOCAR_MUSICA):
+        termo = next((cmd.split(p,1)[1].strip() for p in LISTA_TOCAR_MUSICA if p in cmd), "")
+        if termo:
+            resp = requests.get(ITUNES_API_URL, params={"term": termo, "media": "music", "limit": 1})
+            resultados = resp.json().get("results", [])
+            if resultados:
+                faixa = resultados[0]
+                tipo = 'musica'
+                resposta = f'Tocando "{faixa["trackName"]}" de {faixa["artistName"]}.'
+                dados = {"preview_url": faixa["previewUrl"]}
+            else:
+                resposta = f"Não encontrei nenhuma música para '{termo}'."
+        else:
+            resposta = "Diga 'tocar música <nome>' para eu tocar."
+
     else:
         resposta = obter_resposta_ia(comando)
-    return {'resposta':resposta, 'tipo':tipo, 'dados':dados}
+
+    return {'resposta': resposta, 'tipo': tipo, 'dados': dados}
 
 @bob_bp.route('/comando', methods=['POST'])
 def receber_comando():
-    cmd = request.json.get('comando','').strip()
+    cmd = request.json.get('comando', '').strip()
     if not cmd:
-        return jsonify({'erro':'Comando não fornecido'}),400
+        return jsonify({'erro': 'Comando não fornecido'}), 400
     return jsonify(processar_comando(cmd))
 
 @bob_bp.route('/lembretes', methods=['GET'])
@@ -131,9 +157,9 @@ def get_lembretes():
 
 @bob_bp.route('/lembretes', methods=['DELETE'])
 def del_lembrete():
-    trecho = request.json.get('trecho','').strip()
+    trecho = request.json.get('trecho', '').strip()
     if not trecho:
-        return jsonify({'erro':'Trecho do lembrete não fornecido'}),400
+        return jsonify({'erro': 'Trecho do lembrete não fornecido'}), 400
     return jsonify({'mensagem': excluir_lembrete(trecho)})
 
 @bob_bp.route('/hora', methods=['GET'])
@@ -142,4 +168,4 @@ def rota_hora():
 
 @bob_bp.route('/boasvindas', methods=['GET'])
 def boasvindas():
-    return jsonify({'resposta':'Olá! Eu sou o Bob. Como posso ajudar você hoje?','tipo':'texto','dados':{}})
+    return jsonify({'resposta': 'Olá! Eu sou o Bob. Como posso ajudar você hoje?', 'tipo': 'texto', 'dados': {}})

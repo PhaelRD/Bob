@@ -19,3 +19,7 @@ LISTA_PESQUISA = ["pesquisar por", "buscar por", "pesquise por", "procure por", 
 
 # Comandos para encerrar o chatbot
 LISTA_SAIR = ["sair", "tchau", "desligar", "até logo"]
+
+# Comandos para tocar música
+LISTA_TOCAR_MUSICA = ["tocar música", "tocar", "toque uma música", "coloca uma música", "quero ouvir música", "toque algo", "tocar uma canção"]
+

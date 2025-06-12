@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const muteBtn      = document.getElementById('mute-btn');
   let isMuted = false;
 
-  // força carregamento das vozes
   window.speechSynthesis.getVoices();
 
   function speak(text) {
@@ -25,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (type === 'texto') {
       content.innerHTML = `<p>${text}</p>`;
+
     } else if (type === 'lembretes') {
       content.innerHTML = `<p>${text}</p>`;
       if (dados.lembretes) {
@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         content.appendChild(ul);
       }
+
     } else if (type === 'pesquisa') {
       content.innerHTML = `<p>${text}</p>`;
       if (dados.url) {
@@ -46,6 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
         a.className = 'pesquisa-link';
         a.innerHTML = '<i class="fas fa-external-link-alt"></i> Abrir pesquisa';
         content.appendChild(a);
+      }
+
+    } else if (type === 'musica') {
+      content.innerHTML = `<p>${text}</p>`;
+      if (dados.preview_url) {
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.autoplay = true;
+        audio.src = dados.preview_url;
+        content.appendChild(audio);
       }
     }
 
